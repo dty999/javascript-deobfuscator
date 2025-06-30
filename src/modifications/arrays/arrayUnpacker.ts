@@ -5,16 +5,23 @@ import Array from './array';
 import TraversalHelper from '../../helpers/traversalHelper';
 import Scope, { ScopeType } from '../../scope/scope';
 
+/**
+ * 数组解包器类，用于识别和处理字面量数组。
+ */
 export default class ArrayUnpacker extends Modification {
+    // 存储允许的作用域类型（块级作用域、函数体）
     private readonly scopeTypes = new Set(['Block', 'FunctionBody']);
+    // 是否需要移除数组
     private readonly shouldRemoveArrays: boolean;
+    // 全局作用域对象
     private readonly globalScope: Scope<Array>;
+    // 存储所有找到的数组节点
     private readonly arrayNodes: Set<Shift.Node>;
 
     /**
-     * Creates a new modification.
-     * @param ast The AST.
-     * @param shouldRemoveArrays Whether the arrays should be removed.
+     * 创建一个新的数组解包修改器。
+     * @param ast - AST
+     * @param removeArrays - 是否需要移除数组
      */
     constructor(ast: Shift.Script | Shift.Module, removeArrays: boolean) {
         super('Unpack Arrays', ast);
@@ -24,7 +31,7 @@ export default class ArrayUnpacker extends Modification {
     }
 
     /**
-     * Executes the modification.
+     * 执行数组解包操作。
      */
     execute(): void {
         while (this.findArrays()) {
@@ -37,8 +44,8 @@ export default class ArrayUnpacker extends Modification {
     }
 
     /**
-     * Finds all literal arrays and stores them in the according scope.
-     * @returns Whether any new literal arrays were found.
+     * 查找所有的字面量数组，并将它们存储到相应的作用域中。
+     * @returns 是否找到了新的字面量数组
      */
     private findArrays(): boolean {
         const self = this;
@@ -71,7 +78,7 @@ export default class ArrayUnpacker extends Modification {
     }
 
     /**
-     * Replaces all usages of literal arrays.
+     * 替换所有使用字面量数组的地方。
      */
     private unpackArrays(): void {
         const self = this;
@@ -105,8 +112,8 @@ export default class ArrayUnpacker extends Modification {
     }
 
     /**
-     * Removes all the (suitable) arrays in a scope and its children.
-     * @param scope The scope to remove arrays from.
+     * 移除指定作用域及其子作用域中的数组。
+     * @param scope - 要移除数组的作用域
      */
     private removeArrays(scope: Scope<Array>): void {
         for (const [_, array] of scope.elements) {
@@ -121,8 +128,9 @@ export default class ArrayUnpacker extends Modification {
     }
 
     /**
-     * Returns whether a node is a literal array declaration.
-     * @param node The AST node.
+     * 判断一个节点是否为字面量数组声明。
+     * @param node - AST 节点
+     * @returns 是否是字面量数组声明
      */
     private isLiteralArrayDeclaration(node: Shift.Node): boolean {
         return (
@@ -135,8 +143,9 @@ export default class ArrayUnpacker extends Modification {
     }
 
     /**
-     * Returns whether a node is accessing an index of an array.
-     * @param node The AST node.
+     * 判断一个节点是否是对数组索引的访问。
+     * @param node - AST 节点
+     * @returns 是否是对数组索引的访问
      */
     private isSimpleArrayAccess(node: Shift.Node): boolean {
         return (

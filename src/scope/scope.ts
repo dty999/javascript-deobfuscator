@@ -1,5 +1,9 @@
 import * as Shift from 'shift-ast';
 
+/**
+ * 作用域类，用于管理变量和子作用域。
+ * @typeParam T - 存储在作用域中的元素类型
+ */
 export default class Scope<T> {
     node: Shift.Node;
     type: ScopeType;
@@ -8,10 +12,10 @@ export default class Scope<T> {
     elements: Map<string, T>;
 
     /**
-     * Creates a new scope.
-     * @param node The node that created the scope.
-     * @param type The type of scope.
-     * @param parent The parent scope (optional).
+     * 创建一个新的作用域实例。
+     * @param node - 创建作用域的节点
+     * @param type - 作用域类型
+     * @param parent - 父级作用域（可选）
      */
     constructor(node: Shift.Node, type: ScopeType, parent?: Scope<T>) {
         this.node = node;
@@ -26,9 +30,9 @@ export default class Scope<T> {
     }
 
     /**
-     * Gets an element by name.
-     * @param name The name associated with the element.
-     * @returns The element or null.
+     * 根据名称获取元素。
+     * @param name - 元素关联的名称
+     * @returns 元素或 null
      */
     public get(name: string): T | null {
         if (this.elements.has(name)) {
@@ -39,10 +43,10 @@ export default class Scope<T> {
     }
 
     /**
-     * Adds an element.
-     * @param name The name associated with the element.
-     * @param element The element.
-     * @param type The type of the variable.
+     * 添加一个元素到作用域中。
+     * @param name - 元素关联的名称
+     * @param element - 元素
+     * @param type - 变量类型，默认为 'const'
      */
     public add(name: string, element: T, type: VariableType = 'const'): void {
         switch (type) {
@@ -73,9 +77,9 @@ export default class Scope<T> {
     }
 
     /**
-     * Gets the scope for a given declaration type.
-     * @param type The declaration type.
-     * @returns The scope.
+     * 获取给定声明类型的变量的作用域。
+     * @param type - 声明类型
+     * @returns 找到的作用域
      */
     public getDeclarationScope(type: VariableType): Scope<T> {
         switch (type) {
@@ -97,9 +101,9 @@ export default class Scope<T> {
     }
 
     /**
-     * Finds a scope with a given type. Looks back up the scope tree.
-     * @param types The desired scope types.
-     * @returns The scope found or undefined.
+     * 查找指定类型的父作用域。
+     * @param types - 需要查找的作用域类型数组
+     * @returns 找到的作用域或 undefined
      */
     private findScope(types: ScopeType[]): Scope<T> | undefined {
         let scope: Scope<T> | undefined = this;
@@ -112,8 +116,10 @@ export default class Scope<T> {
     }
 }
 
+// 变量类型定义
 export type VariableType = 'var' | 'const' | 'let' | 'global';
 
+// 作用域类型枚举
 export enum ScopeType {
     Global = 'Global',
     Function = 'Function',
